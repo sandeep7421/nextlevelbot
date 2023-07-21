@@ -1,4 +1,4 @@
-const { User } = require("../../../../Models");
+const { User } = require("../../../Models");
 
 let { formatJoiError, validateParameters } = require(baseDir() + "helper/helper");
 
