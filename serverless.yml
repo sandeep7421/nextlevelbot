@@ -10,7 +10,7 @@
 #    docs.serverless.com
 #
 # Happy Coding!
-service: YourGPT
+service: Test
 
 provider:
   name: aws

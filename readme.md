@@ -6,7 +6,7 @@ It's an Open Source Boilerplate carfted by **Community Developers** for architec
 
 ## Why Nodejs-serverless-boilerplate 🤔
 
-- This is simple in terms of architecture.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k
+- This is simple in terms of architecture.
 - This is flexible and also architecture is open to modify according to your comfort.
 - This is well organised,well optimised and well tested for scalable projects.
 - Git clone -> npm install -> project is ready to use. 

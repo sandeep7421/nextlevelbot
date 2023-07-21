@@ -5,7 +5,7 @@ let express = require("express");
 let path = require("path");
 let logger = require("morgan");
 let cookieParser = require("cookie-parser");
-let webRoutes = require("./routes/web");
+// let webRoutes = require("./routes/web");
 let apiRoutes = require("./routes/api");
 // Import the library:
 let cors = require("cors");
@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Then use it before your routes are set up:
 
 app.use(cors());
-app.use("/", webRoutes);
+// app.use("/", webRoutes);
 app.use("/api/v1/", apiRoutes);
 
 // catch 404 and forward to error handler
