@@ -63,16 +63,16 @@ const deleteOldData = () => {
     })
       .then((deletedCount) => {
         console.log(`${deletedCount} records deleted.`);
-        resolve(`${deletedCount} records deleted.`);
+        resolve(`${deletedCount} global symbol records deleted.`);
       })
       .catch((error) => {
         console.error(`Error deleting records: ${error.message}`);
-        reject(`Error deleting records: ${error.message}`);
+        reject(`Error deleting global symbol records: ${error.message}`);
       });
   });
 };
 
-console.log('Running cron job...');
+console.log('Running global symbol cron job...');
 importGlobalSymbolCSV()
   .then(() => deleteOldData())
   .then((result) => console.log(result))
