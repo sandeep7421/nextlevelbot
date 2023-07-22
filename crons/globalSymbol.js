@@ -31,23 +31,8 @@ const importGlobalSymbolCSV = async () => {
             // Insert all rows into the database
             await GlobalSymbol.bulkCreate(data);
             console.log('Global symbol csv import successful.');
+
             resolve('Global symbol csv imported.');
-
-            try {
-              const deletedCount = await GlobalSymbol.destroy({
-                where: {
-                  createdAt: {
-                    [Op.lt]: oneDayBeforeDate,
-                  },
-                },
-              });
-
-              console.log(`${deletedCount} records deleted.`);
-              resolve('Global symbol CSV import and deletion successful.');
-            } catch (error) {
-              console.error(`Error deleting records: ${error.message}`);
-              reject(`Error deleting records: ${error.message}`);
-            }
           } catch (error) {
             reject(`Error inserting global symbol data: ${error.message}`);
           }
@@ -64,9 +49,35 @@ const importGlobalSymbolCSV = async () => {
   });
 };
 
-// cron.schedule('0 8 * * *', () => {
-  console.log('Running cron job...');
-  importGlobalSymbolCSV()
-    .then((result) => console.log(result))
-    .catch((error) => console.error('An error occurred:', error));
-// });
+const deleteOldData = () => {
+  const oneDayBeforeDate = new Date();
+  oneDayBeforeDate.setDate(oneDayBeforeDate.getDate() - 1);
+
+  return new Promise((resolve, reject) => {
+    GlobalSymbol.destroy({
+      where: {
+        createdAt: {
+          [Op.lt]: oneDayBeforeDate,
+        },
+      },
+    })
+      .then((deletedCount) => {
+        console.log(`${deletedCount} records deleted.`);
+        resolve(`${deletedCount} records deleted.`);
+      })
+      .catch((error) => {
+        console.error(`Error deleting records: ${error.message}`);
+        reject(`Error deleting records: ${error.message}`);
+      });
+  });
+};
+
+console.log('Running cron job...');
+importGlobalSymbolCSV()
+  .then(() => deleteOldData())
+  .then((result) => console.log(result))
+  .catch((error) => console.error('An error occurred:', error));
+
+
+
+
