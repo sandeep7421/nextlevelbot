@@ -12,10 +12,13 @@ const importGlobalSymbolCSV = async () => {
   const oneDayBeforeDate = new Date();
   oneDayBeforeDate.setDate(oneDayBeforeDate.getDate() - 1);
 
+  const batchSize = 100; 
+
   return new Promise((resolve, reject) => {
     try {
       const fileStream = fs.createReadStream(filePath);
       const data = [];
+      let batch = [];
 
       fileStream
         .pipe(csvParser())
@@ -24,14 +27,27 @@ const importGlobalSymbolCSV = async () => {
             ...row,
             expiry: row.expiry ? new Date(row.expiry) : null,
           };
-          data.push(convertedRow);
+          batch.push(convertedRow);
+
+        
+          if (batch.length >= batchSize) {
+            data.push(...batch);
+            batch = [];
+          }
         })
         .on('end', async () => {
           try {
-            // Insert all rows into the database
-            await GlobalSymbol.bulkCreate(data);
-            console.log('Global symbol csv import successful.');
+            
+            if (batch.length > 0) {
+              data.push(...batch);
+            }
 
+            for (let i = 0; i < data.length; i += batchSize) {
+              const batchData = data.slice(i, i + batchSize);
+              await GlobalSymbol.bulkCreate(batchData);
+            }
+
+            console.log('Global symbol csv import successful.');
             resolve('Global symbol csv imported.');
           } catch (error) {
             reject(`Error inserting global symbol data: ${error.message}`);
@@ -77,6 +93,7 @@ importGlobalSymbolCSV()
   .then(() => deleteOldData())
   .then((result) => console.log(result))
   .catch((error) => console.error('An error occurred:', error));
+
 
 
 
