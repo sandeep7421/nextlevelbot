@@ -1,10 +1,10 @@
 # nextlevelbot
 # to run cron 
     use below command 
-    node crons/globalSymbol.js
+    node crons/Upstoxv2.js
 
 # schema for global_symbols table
- CREATE TABLE `global_symbols` (
+ CREATE TABLE `upstoxv2` (
   `id` int NOT NULL AUTO_INCREMENT,
   `instrument_key` varchar(100) DEFAULT NULL,
   `exchange_token` varchar(100) DEFAULT NULL,

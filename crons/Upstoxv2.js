@@ -1,18 +1,18 @@
 require("../bin/kernel");
 const cron = require('node-cron');
 let Sequelize = require("sequelize");
-let { GlobalSymbol } = require("../app/Models");
+let { Upstoxv2 } = require("../app/Models");
 const fs = require('fs');
 const csvParser = require('csv-parser');
 const { Op } = require("sequelize")
 
 const filePath = '/var/www/data.csv';
 
-const importGlobalSymbolCSV = async () => {
+const importUpstoxv2CSV = async () => {
   const oneDayBeforeDate = new Date();
   oneDayBeforeDate.setDate(oneDayBeforeDate.getDate() - 1);
 
-  const batchSize = 100; 
+  const batchSize = 1000; 
 
   return new Promise((resolve, reject) => {
     try {
@@ -44,23 +44,23 @@ const importGlobalSymbolCSV = async () => {
 
             for (let i = 0; i < data.length; i += batchSize) {
               const batchData = data.slice(i, i + batchSize);
-              await GlobalSymbol.bulkCreate(batchData);
+              await Upstoxv2.bulkCreate(batchData);
             }
 
-            console.log('Global symbol csv import successful.');
-            resolve('Global symbol csv imported.');
+            console.log('Upstoxv2 csv import successful.');
+            resolve('Upstoxv2 csv imported.');
           } catch (error) {
-            reject(`Error inserting global symbol data: ${error.message}`);
+            reject(`Error inserting Upstoxv2 data: ${error.message}`);
           }
         })
         .on('error', (error) => {
-          // Handle errors during global symbol csv parsing
-          reject(`Error parsing global symbol csv: ${error.message}`);
+          // Handle errors during Upstoxv2 csv parsing
+          reject(`Error parsing Upstoxv2 csv: ${error.message}`);
         });
     } catch (error) {
       // Handle errors during file reading or any other error
-      console.error(`Error importing global symbol csv: ${error.message}`);
-      reject(`Error importing global symbol csv: ${error.message}`);
+      console.error(`Error importing Upstoxv2 csv: ${error.message}`);
+      reject(`Error importing Upstoxv2 csv: ${error.message}`);
     }
   });
 };
@@ -70,7 +70,7 @@ const deleteOldData = () => {
   oneDayBeforeDate.setDate(oneDayBeforeDate.getDate() - 1);
 
   return new Promise((resolve, reject) => {
-    GlobalSymbol.destroy({
+    Upstoxv2.destroy({
       where: {
         createdAt: {
           [Op.lt]: oneDayBeforeDate,
@@ -79,17 +79,17 @@ const deleteOldData = () => {
     })
       .then((deletedCount) => {
         console.log(`${deletedCount} records deleted.`);
-        resolve(`${deletedCount} global symbol records deleted.`);
+        resolve(`${deletedCount} Upstoxv2 records deleted.`);
       })
       .catch((error) => {
         console.error(`Error deleting records: ${error.message}`);
-        reject(`Error deleting global symbol records: ${error.message}`);
+        reject(`Error deleting Upstoxv2 records: ${error.message}`);
       });
   });
 };
 
-console.log('Running global symbol cron job...');
-importGlobalSymbolCSV()
+console.log('Running Upstoxv2 cron job...');
+importUpstoxv2CSV()
   .then(() => deleteOldData())
   .then((result) => console.log(result))
   .catch((error) => console.error('An error occurred:', error));

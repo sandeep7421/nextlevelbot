@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class GlobalSymbol extends Model {
+  class Upstoxv2 extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   };
-  GlobalSymbol.init({
+  Upstoxv2.init({
     instrument_key : DataTypes.STRING,
     exchange_token : DataTypes.STRING,
     tradingsymbol : DataTypes.STRING,
@@ -29,9 +29,10 @@ module.exports = (sequelize, DataTypes) => {
 
   }, {
     sequelize,
-    modelName: 'GlobalSymbol',
+    modelName: 'Upstoxv2',
+    tableName: 'upstoxv2',
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
     underscored: true
   });
-  return GlobalSymbol;
+  return Upstoxv2;
 };
