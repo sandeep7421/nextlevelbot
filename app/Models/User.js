@@ -4,6 +4,11 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+
+    get is_email_verified() {
+      return !!this.email_verified_at;
+    }
+
     toJSON() {
       const values = { ...this.get() };
       delete values.password; // Exclude the password field

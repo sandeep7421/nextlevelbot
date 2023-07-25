@@ -23,6 +23,28 @@ module.exports = class UserController {
       });
     }
 
+    let email = inputData.email;
+    const isValidEmail = await this.validateEmail(email);
+  
+    if(isValidEmail===false){
+      return res.status(400).send({type:"ERROR",message:"Please add a valid email"})
+    }
+
+    // check if email already exists
+
+    let emailCheck = await User.findOne({
+      where: {
+        email: email
+      }
+    });
+
+    if (emailCheck) {
+      return res.status(400).send({
+        type: "ERROR",
+        message: "Email already exists"
+      })
+    }
+
     let hashedPass = await bcrypt.hash(inputData.password, 10);
     inputData.password = hashedPass;
   
@@ -48,7 +70,7 @@ module.exports = class UserController {
       };
 
       const jwtToken = await createJwtToken(jwtTokenData)
-      const data = { ...userData.get(), "token": jwtToken };
+      const data = { ...userData.toJSON(), "token": jwtToken };
       delete data.password
 
       return res.status(200).send({
@@ -146,6 +168,12 @@ module.exports = class UserController {
       message: "Data Fetched Successfully!",
       data: data
     });
+  }
+
+  async validateEmail(email) {
+    // Regular expression pattern for email validation
+    const strongEmailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return strongEmailPattern.test(email);
   }
 
 };
