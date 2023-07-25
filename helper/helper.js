@@ -1,8 +1,8 @@
 let { Op } = require("sequelize");
-let { User } = require("../app/Models");
+let { User, UserSession } = require("../app/Models");
 let Sequelize = require("sequelize");
 let Joi = require("@hapi/joi");
-
+const jwt = require('jsonwebtoken')
 // Format joi validator error
 const formatJoiError = (errors) => {
   let joiErrors = errors.details;
@@ -87,7 +87,7 @@ const authUser = async (req) => {
     decoder = await jwt.verify(token,jwt_key)
     console.log(decoder);
     if (!decoder.data.session_token) {
-      console.log("!decoder.session_uid");
+      console.log("!decoder.session_token");
       return null
     }
   } catch (error) {
@@ -106,6 +106,7 @@ const authUser = async (req) => {
     include: [
       {
         model: User,
+        attributes: { exclude: ['password'] },
       },
     ],
   });
@@ -160,6 +161,13 @@ const validateParameters = (requiredParams, input) => {
   return "valid";
 };
 
+const createJwtToken = async (data) => {
+  const { jwt_key } = config('jwt')
+
+  const jwtToken = jwt.sign({data : data},jwt_key)
+
+  return jwtToken
+}
 module.exports = {
   formatJoiError,
   ucfirst,
@@ -173,5 +181,6 @@ module.exports = {
   substr,
   in_array,
   authUser,
-  validateParameters
+  validateParameters,
+  createJwtToken
 };
